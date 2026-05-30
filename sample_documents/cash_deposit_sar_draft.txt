@@ -1,0 +1,11 @@
+Case ID: CASE-2024-003
+
+Suspicious Activity Report draft for structured cash deposits.
+
+During Q3 2024, multiple deposits ranging from $8,500 to $9,900 were made across six branch locations.
+
+The deposits were below the CTR reporting threshold and occurred within a short time period.
+
+This pattern may indicate structuring behavior.
+
+Recommendation: Continue monitoring and escalate for compliance review.

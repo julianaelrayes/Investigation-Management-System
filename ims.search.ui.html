@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMS Intelligence Search | Functions Technology</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        :root {
+            --citi-blue: #003EA4;
+            --citi-blue-dark: #002D72;
+            --citi-blue-mid: #0056B3;
+            --citi-blue-light: #1a4fc4;
+            --citi-red: #E21836;
+            --citi-arc: #d9261c;
+
+            --bg-base: #080c1a;
+            --bg-surface: #0d1420;
+            --bg-card: #111827;
+            --bg-card-hover: #161f30;
+            --bg-input: #0a1020;
+
+            --border: rgba(255,255,255,0.07);
+            --border-active: rgba(0,86,179,0.6);
+            --border-bright: rgba(0,86,179,0.9);
+
+            --text-primary: #f0f4ff;
+            --text-secondary: #8899bb;
+            --text-muted: #4a5a7a;
+            --text-accent: #4d9fff;
+
+            --font-display: 'Syne', sans-serif;
+            --font-mono: 'DM Mono', monospace;
+
+            --glow-blue: 0 0 40px rgba(0,86,179,0.25);
+            --glow-blue-sm: 0 0 16px rgba(0,86,179,0.2);
+            --shadow-card: 0 4px 24px rgba(0,0,0,0.4);
+
+            --radius-sm: 4px;
+            --radius: 8px;
+            --radius-lg: 12px;
+
+            --transition: 200ms cubic-bezier(0.4,0,0.2,1);
+            --transition-slow: 400ms cubic-bezier(0.4,0,0.2,1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-display);
+            background: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,86,179,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,86,179,0.04) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 900px;
+            height: 600px;
+            background: radial-gradient(ellipse, rgba(0,62,164,0.12) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 56px;
+            background: rgba(8,12,20,0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+            gap: 20px;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .header-product {
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .header-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-badge {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: var(--radius-sm);
+            background: rgba(0,86,179,0.15);
+            border: 1px solid rgba(0,86,179,0.3);
+            color: var(--text-accent);
+        }
+
+        .app {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding-top: 56px;
+            display: grid;
+            grid-template-columns: 260px 1fr;
+        }
+
+        .sidebar {
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border);
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 56px);
+            position: sticky;
+            top: 56px;
+        }
+
+        .sidebar-section {
+            padding: 0 16px;
+            margin-bottom: 24px;
+        }
+
+        .sidebar-label {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 0 8px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition);
+            margin-bottom: 2px;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(0,86,179,0.08);
+            color: var(--text-primary);
+        }
+
+        .sidebar-item-active {
+            background: rgba(0,86,179,0.15);
+            color: var(--text-accent);
+            border: 1px solid rgba(0,86,179,0.3);
+        }
+
+        .main {
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 56px);
+        }
+
+        .search-hero {
+            padding: 48px 48px 32px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(0,62,164,0.05) 0%, transparent 100%);
+        }
+
+        .search-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .search-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        .search-title span {
+            background: linear-gradient(135deg, #4d9fff, #003EA4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-bar-wrap {
+            position: relative;
+            max-width: 900px;
+        }
+
+        .search-bar {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-active);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: var(--glow-blue-sm);
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: var(--font-display);
+            font-size: 15px;
+            color: var(--text-primary);
+            padding: 16px;
+        }
+
+        .search-submit {
+            margin: 6px;
+            padding: 10px 20px;
+            background: var(--citi-blue);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .search-submit:hover {
+            background: var(--citi-blue-light);
+            box-shadow: 0 0 20px rgba(0,86,179,0.4);
+        }
+
+        .results-area {
+            padding: 32px 48px;
+        }
+
+        .synthesis-card {
+            background: linear-gradient(135deg, rgba(0,62,164,0.15), rgba(45,114,224,0.1));
+            border: 1px solid rgba(0,86,179,0.3);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+        }
+
+        .synthesis-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--citi-blue), #4d9fff, var(--citi-blue));
+            background-size: 200% 100%;
+            animation: shimmer 2s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .result-score {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .score-bar-wrap {
+            width: 48px;
+            height: 3px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .score-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--citi-blue), #4d9fff);
+            border-radius: 2px;
+        }
+
+        .result-filename {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            padding-left: 36px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            padding-left: 36px;
+        }
+
+        .result-text mark {
+            background: rgba(77,159,255,0.2);
+            color: var(--text-accent);
+            border-radius: 2px;
+            padding: 0 2px;
+        }
+
+        .result-footer {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 36px;
+            margin-top: 10px;
+        }
+
+        .result-tag {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+        }
+
+        .entity-panel {
+            border-left: 1px solid var(--border);
+            background: var(--bg-surface);
+            padding: 24px 20px;
+            overflow-y: auto;
+        }
+
+        .panel-section-title {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .entity-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            cursor: pointer;
+            margin-bottom: 4px;
+        }
+
+        .entity-item:hover {
+            background: rgba(255,255,255,0.03);
+            border-color: var(--border);
+        }
+
+        .entity-type-badge {
+            font-family: var(--font-mono);
+            font-size: 8px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 3px;
+            width: 52px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .stat-card {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .query-suggestions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .suggestion-chip,
+        .filter-chip {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            background: transparent;
+            transition: all var(--transition);
+        }
+
+        .suggestion-chip:hover,
+        .filter-chip:hover,
+        .filter-chip.active {
+            color: var(--text-accent);
+            border-color: rgba(0,86,179,0.4);
+            background: rgba(0,86,179,0.1);
+        }
+
+        .filters-bar {
+            padding: 12px 48px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-surface);
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .results-area {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .results-list {
+            padding: 24px 32px 48px;
+            overflow-y: auto;
+        }
+
+        .results-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .results-count,
+        .results-latency {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .results-count strong {
+            color: var(--text-accent);
+        }
+
+        .latency-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #22c55e;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .synthesis-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .synthesis-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: rgba(0,86,179,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .synthesis-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-accent);
+            font-weight: 500;
+        }
+
+        .synthesis-model {
+            margin-left: auto;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--text-muted);
+        }
+
+        .synthesis-text {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .synthesis-sources {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .source-tag {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3px 8px;
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow-card);
+            transition: all var(--transition);
+        }
+
+        .result-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(0,86,179,0.3);
+        }
+
+        .result-header {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .result-rank {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted);
+            width: 24px;
+        }
+
+        .result-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .result-doc-type,
+        .result-case-id {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 2px 6px;
+        }
+
+        .result-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 6px;
+        }
+
+        .result-action-btn {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 320px;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 42px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+
+        .empty-title {
+            color: var(--text-secondary);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .empty-sub {
+            font-size: 13px;
+            max-width: 420px;
+        }
+
+        .entity-graph {
+            height: 180px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .entity-graph canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .etype-person { background: rgba(168,85,247,0.15); color: #c084fc; }
+        .etype-org { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        .etype-account { background: rgba(34,197,94,0.15); color: #4ade80; }
+        .etype-location { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .etype-amount { background: rgba(239,68,68,0.15); color: #f87171; }
+
+        .loading-bar {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--citi-blue), #4d9fff, transparent);
+            background-size: 200% 100%;
+            animation: loading-sweep 1.2s linear infinite;
+            border-radius: 1px;
+            margin-bottom: 20px;
+        }
+
+        @keyframes loading-sweep {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-shimmer 1.5s infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes skeleton-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--transition);
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid rgba(0,86,179,0.3);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            width: 480px;
+            max-width: 90vw;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.6), var(--glow-blue);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .modal-sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            font-family: var(--font-mono);
+        }
+
+        .drop-zone {
+            border: 2px dashed rgba(0,86,179,0.3);
+            border-radius: var(--radius);
+            padding: 40px 24px;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(0,62,164,0.04);
+            margin-bottom: 16px;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.drag-over {
+            border-color: rgba(0,86,179,0.7);
+            background: rgba(0,62,164,0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-ghost,
+        .btn-primary {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-ghost {
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .btn-primary {
+            border: none;
+            background: var(--citi-blue);
+            color: white;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-card);
+            border: 1px solid rgba(34,197,94,0.3);
+            border-radius: var(--radius);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            z-index: 300;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .preview-modal {
+            width: 720px;
+            max-width: 92vw;
+        }
+
+        .preview-content {
+            background: rgba(0,0,0,0.25);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.7;
+            max-height: 420px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .case-item {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-top: 8px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.02);
+            transition: all var(--transition);
+        }
+
+        .case-item:hover,
+        .case-item.active {
+            background: rgba(0,86,179,0.12);
+            border-color: rgba(0,86,179,0.35);
+        }
+
+        .case-id {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.06em;
+            color: var(--text-accent);
+            margin-bottom: 6px;
+        }
+
+        .case-name {
+            font-size: 13px;
+            line-height: 1.35;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .case-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .case-status {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .status-active {
+            color: #4ade80;
+            background: rgba(34,197,94,0.12);
+            border: 1px solid rgba(34,197,94,0.25);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-logo">
+            <div class="header-product">IMS Intelligence Search</div>
+        </div>
+
+        <div class="header-right">
+            <div class="header-badge">Functions Technology</div>
+            <div class="header-user">
+                <div class="user-dot"></div>
+                <span>ab12345</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="app">
+
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-label">Actions</div>
+
+                <a class="sidebar-item" href="#" onclick="openIngestModal(); return false;">
+                    <span class="item-icon">⬆️</span>
+                    <span>Ingest Evidence</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-label">Active Case</div>
+
+                <div class="case-item active" onclick="showCaseOverview()">
+                    <div class="case-id">CASE-2024-001</div>
+                    <div class="case-name">Offshore Wire Transfer Investigation</div>
+                    <div class="case-meta">
+                        <span class="case-status status-active">Active</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main">
+            <section class="search-hero">
+                <div class="search-eyebrow">Semantic Intelligence Layer | pgvector HNSW | R2D2 Gemini 2.5</div>
+                <h1 class="search-title">Search <span>evidence</span> by meaning,<br>not just keywords.</h1>
+
+                <div class="search-bar-wrap">
+                    <div class="search-bar">
+                        <input class="search-input" id="searchInput" type="text" placeholder="e.g. suspicious wire transfers involving shell companies in Q3" autocomplete="off" spellcheck="false">
+                        <button class="search-submit" onclick="runSearch()">Search</button>
+                    </div>
+                </div>
+
+                <div class="query-suggestions">
+                    <span class="suggestion-chip" onclick="useQuery(this)">wire transfers to offshore accounts</span>
+                    <span class="suggestion-chip" onclick="useQuery(this)">shell company beneficial ownership</span>
+                    <span class="suggestion-chip" onclick="useQuery(this)">suspicious cash deposits Q3 2024</span>
+                    <span class="suggestion-chip" onclick="useQuery(this)">layering transactions between entities</span>
+                </div>
+            </section>
+
+            <div class="filters-bar">
+                <span class="filter-label">Filter:</span>
+                <button class="filter-chip active" onclick="toggleFilter(this)">All Types</button>
+                <button class="filter-chip" onclick="toggleFilter(this)">PDF</button>
+                <button class="filter-chip" onclick="toggleFilter(this)">XLSX</button>
+                <button class="filter-chip" onclick="toggleFilter(this)">Email</button>
+                <button class="filter-chip" onclick="toggleFilter(this)">DOCX</button>
+                <button class="filter-chip" onclick="toggleFilter(this)">Last 30 days</button>
+                <button class="filter-chip" onclick="toggleFilter(this)">High Relevance</button>
+            </div>
+
+            <div class="results-area">
+                <div class="results-list" id="resultsList">
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-icon">🔎</div>
+                        <div class="empty-title">Ready to search</div>
+                        <div class="empty-sub">Enter a natural language query above. The semantic search engine will find relevant evidence across indexed documents even if the exact words do not match.</div>
+                    </div>
+                </div>
+
+                <div class="entity-panel" id="entityPanel">
+                    <div class="panel-section-title">Query Stats</div>
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-card"><div class="stat-value" id="statResults">0</div><div class="stat-label">Results</div></div>
+                        <div class="stat-card"><div class="stat-value" id="statLatency">0</div><div class="stat-label">Latency</div></div>
+                        <div class="stat-card"><div class="stat-value" id="statDocs">0</div><div class="stat-label">Documents</div></div>
+                    </div>
+
+                    <div style="margin-top: 24px;">
+                        <div class="panel-section-title">Entity Graph</div>
+                        <div class="entity-graph"><canvas id="entityCanvas"></canvas></div>
+                    </div>
+
+                    <div id="entityListSection" style="display:none;">
+                        <div class="panel-section-title">Entities Found</div>
+                        <div id="entityList"></div>
+                    </div>
+
+                    <div style="margin-top: 24px;">
+                        <div class="panel-section-title">System Status</div>
+                        <div class="entity-item"><span class="entity-type-badge etype-account">HNSW</span><span class="entity-value">Vector index active</span><span class="entity-count" style="color:#4ade80;">●</span></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="ingestModal" onclick="closeModalOnOverlay(event)">
+        <div class="modal">
+            <div class="modal-title">Ingest Evidence</div>
+            <div class="modal-sub">POST /api/v1/ingest | Apache Tika | 100+ MIME types</div>
+            <div class="drop-zone" id="dropZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" onclick="document.getElementById('fileInput').click()">
+                <div style="font-size:32px;margin-bottom:12px;opacity:0.5;">📄</div>
+                <div style="color:var(--text-secondary);font-size:13px;">Drop evidence files here or click to browse</div>
+                <div style="color:var(--text-muted);font-size:10px;margin-top:8px;">PDF | DOCX | XLSX | MSG | EML | PNG | MP4 | ZIP | +95 more</div>
+            </div>
+            <input type="file" id="fileInput" style="display:none" multiple onchange="handleFileSelect(event)">
+            <div id="fileList" style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);"></div>
+            <div class="modal-actions">
+                <button class="btn-ghost" onclick="closeIngestModal()">Cancel</button>
+                <button class="btn-primary" onclick="simulateIngest()">Index Evidence</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="previewModal" onclick="closePreviewOnOverlay(event)">
+        <div class="modal preview-modal">
+            <div class="modal-title" id="previewTitle">Document Preview</div>
+            <div class="modal-sub" id="previewSub">Uploaded evidence result</div>
+            <div class="preview-content" id="previewContent"></div>
+            <div class="modal-actions">
+                <button class="btn-ghost" onclick="closePreviewModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <span>✅</span>
+        <span id="toastMsg">Document indexed successfully</span>
+    </div>
+
+    <script>
+        let synthesisOn = true;
+        let allCasesOn = false;
+        let currentCase = 'CASE-2024-001';
+        let isSearching = false;
+        let selectedFiles = [];
+        let lastSearchResults = [];
+
+        const MOCK_RESULTS = [
+            {
+                rank: 1,
+                docType: 'pdf',
+                caseId: 'CASE-2024-001',
+                fileName: 'wire_transfer_report_Q3_2024.pdf',
+                text: 'Multiple <mark>wire transfers</mark> totalling $4.2M were identified between accounts held by Meridian Holdings Ltd and three <mark>offshore</mark> entities registered in the Cayman Islands. Transaction velocity increased across Q3.',
+                score: 0.94,
+                tags: ['p.8', 'Transaction Analysis', '2024-09-14']
+            },
+            {
+                rank: 2,
+                docType: 'xlsx',
+                caseId: 'CASE-2024-001',
+                fileName: 'account_statements_meridian_2024.xlsx',
+                text: 'Account #4471-XXXX-8823 shows 47 outbound <mark>wire transfers</mark> between July and September 2024. Beneficiary accounts include entities in Cayman Islands, BVI, and Panama.',
+                score: 0.89,
+                tags: ['Sheet: Transactions', 'Row 249', '2024-10-01']
+            },
+            {
+                rank: 3,
+                docType: 'eml',
+                caseId: 'CASE-2024-001',
+                fileName: 'internal_memo_compliance_alert.eml',
+                text: 'COMPLIANCE ALERT: Automated monitoring flagged <mark>suspicious</mark> outbound transfers from corporate account. Beneficiary Apex Ventures LLC has no verifiable business relationship with the account holder.',
+                score: 0.85,
+                tags: ['From: compliance@citi.com', '2024-08-22']
+            },
+            {
+                rank: 4,
+                docType: 'docx',
+                caseId: 'CASE-2024-002',
+                fileName: 'shell_company_analysis_apex_ventures.docx',
+                text: 'Apex Ventures LLC was incorporated in Delaware on 2023-11-14. Beneficial ownership records are incomplete and no natural persons were identified as UBOs.',
+                score: 0.81,
+                tags: ['Section 3.2', 'Entity Analysis', '2024-09-30']
+            },
+            {
+                rank: 5,
+                docType: 'pdf',
+                caseId: 'CASE-2024-003',
+                fileName: 'sar_filing_draft_2024_Q3.pdf',
+                text: 'Suspicious Activity Report Draft. During <mark>Q3 2024</mark>, 23 cash deposits ranging from $8,500-$9,900 were made across 6 branch locations within a 72-hour period.',
+                score: 0.77,
+                tags: ['SAR Draft', 'p.2', '2024-10-05']
+            }
+        ];
+
+        const MOCK_ENTITIES = [
+            { type: 'ORG', value: 'Meridian Holdings Ltd', count: 8 },
+            { type: 'ORG', value: 'Apex Ventures LLC', count: 5 },
+            { type: 'ACCOUNT', value: '#4471-XXX-8823', count: 12 },
+            { type: 'LOCATION', value: 'Cayman Islands', count: 6 },
+            { type: 'AMOUNT', value: '$4.2M total', count: 3 },
+            { type: 'PERSON', value: 'J. Richardson (UBO)', count: 2 },
+            { type: 'LOCATION', value: 'British Virgin Islands', count: 4 }
+        ];
+
+        const SYNTHESIS_TEXT = `Based on the retrieved evidence, <strong>multiple suspicious wire transfers totalling approximately $4.2M</strong> were identified from account #4471-XXXX-8823 to offshore entities in Q3 2024. The transfers show layering behavior through shell companies and recurring transaction patterns.`;
+
+        async function runSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query || isSearching) return;
+
+            isSearching = true;
+            showLoadingState();
+
+            const startTime = performance.now();
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/v1/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        top_k: 5
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Search request failed');
+                }
+
+                const data = await response.json();
+                const latency = Math.round(performance.now() - startTime);
+
+                showResults(query, latency, data.results || [], data.documents_indexed || 0);
+            } catch (error) {
+                showSearchError(error);
+            } finally {
+                isSearching = false;
+            }
+        }
+
+        function showLoadingState() {
+            const list = document.getElementById('resultsList');
+            list.innerHTML = `
+                <div class="loading-bar"></div>
+                ${[1,2,3].map(() => `
+                    <div style="padding:20px 0;border-bottom:1px solid var(--border);">
+                        <div class="skeleton" style="height:12px;width:120px;margin-bottom:12px;"></div>
+                        <div class="skeleton" style="height:14px;width:80%;margin-bottom:8px;"></div>
+                        <div class="skeleton" style="height:14px;width:60%;margin-bottom:8px;"></div>
+                        <div class="skeleton" style="height:14px;width:70%;"></div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function showResults(query, latency, apiResults, documentsIndexed) {
+            const list = document.getElementById('resultsList');
+
+            const results = apiResults.map((item, index) => ({
+                rank: item.rank || index + 1,
+                docType: getDocType(item.document_name),
+                caseId: item.case_id || 'CASE-POC',
+                fileName: item.document_name || 'uploaded_document.txt',
+                text: highlightQuery(item.text || '', query),
+                score: item.score || 1.0,
+                tags: [item.source || 'uploaded document']
+            }));
+
+            lastSearchResults = results;
+            document.getElementById('statResults').textContent = results.length;
+            document.getElementById('statLatency').textContent = latency + 'ms';
+            document.getElementById('statDocs').textContent = documentsIndexed;
+
+            if (results.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔎</div>
+                        <div class="empty-title">No results found</div>
+                        <div class="empty-sub">No uploaded document matched "${query}". Try searching for a word that exists in the uploaded file, such as Meridian Holdings, Cayman Islands, or Apex Ventures.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="results-meta">
+                    <div class="results-count"><strong>${results.length}</strong> results for "${query}"</div>
+                    <div class="results-latency"><span class="latency-dot"></span>${latency}ms | FastAPI keyword search</div>
+                </div>
+                <div class="synthesis-card">
+                    <div class="synthesis-header">
+                        <div class="synthesis-icon">✨</div>
+                        <div class="synthesis-label">Backend Result Summary</div>
+                        <div class="synthesis-model">Python FastAPI</div>
+                    </div>
+                    <div class="synthesis-text">The backend searched ${documentsIndexed} uploaded document(s) and returned ${results.length} matching result(s). This is currently keyword search; semantic embeddings will be added next.</div>
+                    <div class="synthesis-sources">
+                        ${results.slice(0,3).map((r,i) => `<span class="source-tag">Source ${i+1}: ${r.fileName.substring(0,24)}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+
+            results.forEach((r, i) => {
+                const scorePercent = Math.round(r.score * 100);
+                html += `
+                    <div class="result-card" style="animation-delay:${i * 60}ms">
+                        <div class="result-header">
+                            <div class="result-rank">${String(r.rank).padStart(2,'0')}</div>
+                            <div class="result-meta-row">
+                                <span class="result-doc-type type-${r.docType}">${r.docType.toUpperCase()}</span>
+                                <span class="result-case-id">${r.caseId}</span>
+                                <div class="result-score">
+                                    <div class="score-bar-wrap"><div class="score-bar" style="width:${scorePercent}%"></div></div>
+                                    <span class="score-value">${r.score.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="result-filename">${r.fileName}</div>
+                        <div class="result-text">${r.text}</div>
+                        <div class="result-footer">
+                            ${r.tags.map(t => `<span class="result-tag">🏷 ${t}</span>`).join('')}
+                            <div class="result-actions">
+                                <button class="result-action-btn" onclick="viewDocument(${i})">View Doc</button>
+                                <button class="result-action-btn" onclick="addToCase(${i})">Add to Case</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            list.innerHTML = html;
+            showEntities();
+        }
+
+        function getDocType(fileName) {
+            if (!fileName || !fileName.includes('.')) return 'txt';
+            return fileName.split('.').pop().toLowerCase();
+        }
+
+        function highlightQuery(text, query) {
+            if (!text || !query) return text;
+
+            const safeText = text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${escapedQuery})`, 'gi');
+
+            return safeText.replace(regex, '<mark>$1</mark>');
+        }
+
+        function showSearchError(error) {
+            const list = document.getElementById('resultsList');
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">⚠️</div>
+                    <div class="empty-title">Backend connection failed</div>
+                    <div class="empty-sub">Make sure FastAPI is running at http://127.0.0.1:8000. Error: ${error.message}</div>
+                </div>
+            `;
+        }
+
+        function showEntities() {
+            const section = document.getElementById('entityListSection');
+            const list = document.getElementById('entityList');
+            section.style.display = 'block';
+            const typeMap = { PERSON: 'etype-person', ORG: 'etype-org', ACCOUNT: 'etype-account', LOCATION: 'etype-location', AMOUNT: 'etype-amount' };
+            list.innerHTML = MOCK_ENTITIES.map(e => `
+                <div class="entity-item">
+                    <span class="entity-type-badge ${typeMap[e.type]}">${e.type}</span>
+                    <span class="entity-value">${e.value}</span>
+                    <span class="entity-count">${e.count}</span>
+                </div>
+            `).join('');
+            drawEntityGraph();
+        }
+
+        function drawEntityGraph() {
+            const canvas = document.getElementById('entityCanvas');
+            if (!canvas) return;
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            const ctx = canvas.getContext('2d');
+            const nodes = [
+                { x: 0.5, y: 0.5, label: 'CASE-001', color: '#003EA4', r: 18 },
+                { x: 0.2, y: 0.25, label: 'Meridian', color: '#60a5fa', r: 12 },
+                { x: 0.8, y: 0.25, label: 'Apex LLC', color: '#60a5fa', r: 12 },
+                { x: 0.15, y: 0.7, label: 'Cayman', color: '#fbbf24', r: 10 },
+                { x: 0.5, y: 0.85, label: '#4471', color: '#4ade80', r: 10 },
+                { x: 0.82, y: 0.7, label: 'BVI', color: '#fbbf24', r: 10 },
+                { x: 0.35, y: 0.15, label: 'J.Rich', color: '#c084fc', r: 8 }
+            ];
+            const edges = [[0,1],[0,2],[1,3],[1,4],[2,4],[2,5],[1,6]];
+            const W = canvas.width;
+            const H = canvas.height;
+            ctx.clearRect(0,0,W,H);
+            ctx.strokeStyle = 'rgba(0,86,179,0.25)';
+            ctx.lineWidth = 1;
+            edges.forEach(([a,b]) => {
+                ctx.beginPath();
+                ctx.moveTo(nodes[a].x * W, nodes[a].y * H);
+                ctx.lineTo(nodes[b].x * W, nodes[b].y * H);
+                ctx.stroke();
+            });
+            nodes.forEach(n => {
+                const x = n.x * W;
+                const y = n.y * H;
+                const grad = ctx.createRadialGradient(x, y, 0, x, y, n.r * 2.5);
+                grad.addColorStop(0, n.color + '40');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(x, y, n.r * 2.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = n.color + '30';
+                ctx.strokeStyle = n.color;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(x, y, n.r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                ctx.fillStyle = 'rgba(240,244,255,0.7)';
+                ctx.font = '8px DM Mono, monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(n.label, x, y + n.r + 10);
+            });
+        }
+
+
+        async function showCaseOverview() {
+            let documentCount = document.getElementById('statDocs').textContent || '0';
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/v1/documents');
+                if (response.ok) {
+                    const data = await response.json();
+                    documentCount = data.count;
+                }
+            } catch (e) {}
+
+            document.getElementById('resultsList').innerHTML = `
+                <div class="result-card">
+                    <div class="result-filename">CASE-2024-001 · Offshore Wire Transfer Investigation</div>
+                    <div class="result-text">
+                        This is the active investigation workspace. Use the search bar above to search uploaded evidence, review matching documents, and add relevant findings to the case.
+                    </div>
+                    <div class="result-footer">
+                        <span class="result-tag">📄 ${documentCount} uploaded documents</span>
+                        <span class="result-tag">⚠️ Active Investigation</span>
+                    </div>
+                </div>
+            `;
+
+            showToast('📁 Active case summary loaded');
+        }
+
+
+        function toggleFilter(el) { el.classList.toggle('active'); }
+        function useQuery(el) { document.getElementById('searchInput').value = el.textContent; document.getElementById('searchInput').focus(); }
+        function selectCase(caseId) {
+            currentCase = caseId;
+            document.querySelectorAll('.case-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+        document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+        function openIngestModal() { document.getElementById('ingestModal').classList.add('open'); }
+        function closeIngestModal() { document.getElementById('ingestModal').classList.remove('open'); }
+        function closeModalOnOverlay(e) { if (e.target === document.getElementById('ingestModal')) closeIngestModal(); }
+        function handleDragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
+        function handleDragLeave() { document.getElementById('dropZone').classList.remove('drag-over'); }
+        function handleDrop(e) {
+            e.preventDefault();
+            document.getElementById('dropZone').classList.remove('drag-over');
+            selectedFiles = Array.from(e.dataTransfer.files);
+            showFileList(selectedFiles);
+        }
+
+        function handleFileSelect(e) {
+            selectedFiles = Array.from(e.target.files);
+            showFileList(selectedFiles);
+        }
+
+        function showFileList(files) {
+            const list = document.getElementById('fileList');
+
+            if (!files || files.length === 0) {
+                list.innerHTML = '';
+                return;
+            }
+
+            list.innerHTML = files.map(f => `
+                <div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;">
+                    <span style="color:var(--text-accent);">📄</span>
+                    <span style="color:var(--text-secondary);flex:1;">${f.name}</span>
+                    <span style="color:var(--text-muted);">${(f.size / 1024).toFixed(1)} KB</span>
+                </div>
+            `).join('');
+        }
+
+        async function simulateIngest() {
+            if (!selectedFiles || selectedFiles.length === 0) {
+                showToast('⚠️ Please choose at least one file first');
+                return;
+            }
+
+            showToast('⏳ Uploading evidence to FastAPI backend...');
+
+            let uploadedCount = 0;
+
+            for (const file of selectedFiles) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('http://127.0.0.1:8000/api/v1/ingest', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Upload failed for ${file.name}`);
+                    }
+
+                    uploadedCount += 1;
+                } catch (error) {
+                    showToast(`⚠️ ${error.message}`);
+                    return;
+                }
+            }
+
+            closeIngestModal();
+            showToast(`🎉 ${uploadedCount} document(s) indexed successfully`);
+            selectedFiles = [];
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileList').innerHTML = '';
+            checkIndexStatus(false);
+        }
+
+        function viewDocument(index) {
+            const result = lastSearchResults[index];
+
+            if (!result) {
+                showToast('⚠️ No document result selected');
+                return;
+            }
+
+            document.getElementById('previewTitle').textContent = result.fileName;
+            document.getElementById('previewSub').textContent = `${result.caseId} | ${result.docType.toUpperCase()} | Score ${result.score.toFixed(2)}`;
+            document.getElementById('previewContent').innerHTML = result.text;
+            document.getElementById('previewModal').classList.add('open');
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').classList.remove('open');
+        }
+
+        function closePreviewOnOverlay(e) {
+            if (e.target === document.getElementById('previewModal')) {
+                closePreviewModal();
+            }
+        }
+
+        function addToCase(index) {
+            const result = lastSearchResults[index];
+
+            if (!result) {
+                showToast('⚠️ No document result selected');
+                return;
+            }
+
+            showToast(`✅ ${result.fileName} added to ${currentCase}`);
+        }
+
+        async function checkIndexStatus(showSuccessToast = true) {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/v1/documents');
+
+                if (!response.ok) {
+                    throw new Error('Could not load index status');
+                }
+
+                const data = await response.json();
+                document.getElementById('statDocs').textContent = data.count;
+
+                if (showSuccessToast) {
+                    showToast(`📊 Index contains ${data.count} document(s)`);
+                }
+            } catch (error) {
+                showToast('⚠️ Start FastAPI first, then try Index Status again');
+            }
+        }
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+        window.addEventListener('load', () => {
+            drawEntityGraph();
+            checkIndexStatus(false);
+            showCaseOverview();
+        });
+        window.addEventListener('resize', drawEntityGraph);
+    </script>
+
+</body>
+</html>

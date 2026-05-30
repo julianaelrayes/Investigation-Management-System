@@ -1,0 +1,11 @@
+Case ID: CASE-2024-001
+
+Meridian Holdings Ltd processed outbound wire transfers totaling approximately $4.2 million during Q3 2024.
+
+Funds were routed to offshore shell companies in the Cayman Islands and British Virgin Islands.
+
+Beneficiary accounts included Apex Ventures LLC.
+
+Risk indicators include high transaction velocity, layered transfers, incomplete beneficial ownership records, and offshore jurisdictions.
+
+Recommendation: Escalate to AML investigators and prepare SAR.

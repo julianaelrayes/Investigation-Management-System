@@ -1,0 +1,26 @@
+CONFIDENTIAL INVESTIGATION REPORT
+
+Case ID: CASE-2024-001
+
+Subject:
+Suspicious wire transfer activity involving offshore shell companies.
+
+Summary:
+Between July and September 2024, account 4471-XXXX-8823 processed outbound wire transfers totaling approximately $4.2 million.
+
+Entities involved:
+- Meridian Holdings Ltd
+- Apex Ventures LLC
+
+Locations:
+- Cayman Islands
+- British Virgin Islands
+
+Risk Indicators:
+- Layered transactions
+- Offshore jurisdictions
+- Incomplete beneficial ownership records
+- High transaction velocity
+
+Recommendation:
+Escalate to AML investigators and prepare Suspicious Activity Report (SAR).

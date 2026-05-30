@@ -1,0 +1,11 @@
+Investigation Case: CASE-2024-001
+
+Meridian Holdings Ltd initiated multiple wire transfers totaling approximately $4.2 million during Q3 2024.
+
+The funds were routed through offshore entities registered in the Cayman Islands and British Virgin Islands.
+
+Beneficiary accounts included Apex Ventures LLC and several shell corporations with limited ownership transparency.
+
+Compliance analysts flagged the transactions as potentially suspicious due to unusual transaction velocity, layered transfers, and missing beneficial ownership documentation.
+
+Review recommended for enhanced due diligence and SAR preparation.
